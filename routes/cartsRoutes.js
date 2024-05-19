@@ -14,6 +14,7 @@ router.post("/", async (req, res) => {
 
     }catch(error){
         console.log(error)
+        res.status(500).json({status: "Error", msg: "Error interno del servidor"})
     }
 })
 
@@ -29,6 +30,21 @@ router.post("/:cid/product/:pid", async (req, res) => {
 
     }catch(error){
         console.log(error)
+        res.status(500).json({status: "Error", msg: "Error interno del servidor"})
+    }
+})
+router.delete("/:cid/product/:pid", async (req, res) => {
+
+    try{
+        const {cid, pid} = req.params
+        const cart = await cartDao.deleteProductInCart(cid, pid)
+        if(cart.product === false) return res.status(404).json({status: "Error", msg: `No se encontro el producto con el id ${pid}`})
+
+        res.status(200).json({status: "success", payload: cart})
+
+    }catch(error){
+        console.log(error)
+        res.status(500).json({status: "Error", msg: "Error interno del servidor"})
     }
 })
 
@@ -43,6 +59,7 @@ router.get("/:cid", async (req, res) => {
 
     }catch(error){
         console.log(error)
+        res.status(500).json({status: "Error", msg: "Error interno del servidor"})
     }
 })
 

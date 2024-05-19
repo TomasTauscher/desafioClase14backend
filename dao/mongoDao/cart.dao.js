@@ -1,4 +1,5 @@
 import { cartModel } from "../models/cart.model.js";
+import { productModel } from "../models/product.model.js";
 
 
 const getById = async (id) => {
@@ -13,21 +14,34 @@ const create = async (data) => {
 
 const addProductToCart = async (cid, pid) => {
     const product = await productModel.findById(pid)
+    if(!product) 
+        return {
+            product: false
+        }
+
+    const productInCart = await cartModel.findOneAndReplace({_id: cid, "products.product": pid}, {$inc: {"products.$.quantity": 1}})
+    if(!productInCart) {
+        await cartModel.findByIdAndUpdate(cid, {$push: {products: {product: pid, quantity: 1}}})
+    }
+
+    const cart = await cartModel.findById(cid)
+    return cart
+}
+
+const deleteProductInCart = async (cid, pid) => {
+    const product = await productModel.findById(pid)
     if(!product) return {
         product: false
     }
-
-    await cartModel.findByIdAndUpdate(cid, { $push: {products: product} })
-
-    const cart = await cartModel.findById(cid)
+    const cart = await cartModel.findOneAndUpdate({_id: cid, "products.product": pid}, {$inc: {"products.$.quantity": -1}})
     if(!cart) return {
         cart: false
     }
-    return cart
 }
 
 export default{
     getById,
     create,
-    addProductToCart
+    addProductToCart,
+    deleteProductInCart
 }
