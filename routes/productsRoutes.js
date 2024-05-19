@@ -1,17 +1,17 @@
 import { Router } from "express";
-import productManager from "../src/managers/productManager.js";
+import productDao from "../dao/mongoDao/product.dao.js";
+
 
 const router = Router()
-
 
 
 router.get("/", async (req, res) => {
     
     try{
-        const {limit} = req.query;
-        const products = await productManager.getProducts(limit)
+        //const {limit} = req.query;
+        const products = await productDao.getAll()
 
-        res.status(200).json(products)
+        res.status(200).json({status: "success", payload: products})
 
         
     }
@@ -23,12 +23,9 @@ router.get("/", async (req, res) => {
 router.get("/:pid", async (req, res) => {
 
     try{  
-
-
         const {pid} = req.params
-        const product = await productManager.getProductById(parseInt(pid))
-
-        res.status(200).json(product)
+        const product = await productDao.getById(pid)
+        res.status(200).json({status: "success", payload: product})
 
     }catch (error) {
         console.log(error)
@@ -42,9 +39,9 @@ router.post ("/", async (req, res) => {
 
         const product = req.body
 
-        const newProduct = await productManager.addProduct(product)
+        const newProduct = await productDao.create(product)
 
-        res.status(201).json(newProduct)
+        res.status(200).json({status: "success", payload: newProduct})
 
     }catch(error){
         console.log(error)
