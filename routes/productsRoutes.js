@@ -25,6 +25,8 @@ router.get("/:pid", async (req, res) => {
     try{  
         const {pid} = req.params
         const product = await productDao.getById(pid)
+        if(!product) return res.status(404).json({status: "Error", msg: `Producto con el id ${pid} no encontrado`})
+
         res.status(200).json({status: "success", payload: product})
 
     }catch (error) {
@@ -41,7 +43,7 @@ router.post ("/", async (req, res) => {
 
         const newProduct = await productDao.create(product)
 
-        res.status(200).json({status: "success", payload: newProduct})
+        res.status(201).json({status: "success", payload: newProduct})
 
     }catch(error){
         console.log(error)
@@ -52,11 +54,12 @@ router.put ("/:pid", async (req, res) => {
 
     try{
         const {pid} = req.params
-        const product = req.body
+        const productData = req.body
 
-        const updateProduct = await productManager.updateProduct(pid, product)
+        const updateProduct = await productDao.update(pid, productData)
+        if(!updateProduct) return res.status(404).json({status: "Error", msg: `Producto con el id ${pid} no encontrado`})
 
-        res.status(201).json(updateProduct)
+        res.status(200).json({status: "success", payload: updateProduct})
 
     }catch(error){
         console.log(error)
@@ -68,9 +71,10 @@ router.delete ("/:pid", async (req, res) => {
     try{
         const {pid} = req.params
 
-        await productManager.deleteProduct(pid)
-
-        res.status(201).json({message: "Producto eliminado"})
+        const product = await productDao.deleteOne(pid)
+        if(!product) return res.status(404).json({status: "Error", msg: `Producto con el id ${pid} no encontrado`})
+        
+        res.status(200).json({status: "success", payload: "Producto eliminado"})
 
     }catch(error){
         console.log(error)
