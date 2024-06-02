@@ -3,3 +3,6 @@ git add .
 git commit -m "lo que quieras"
 git branch -M main
 git push
+
+
+git remote remove origin
