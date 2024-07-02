@@ -7,7 +7,7 @@ import { isLogin } from "../middlewares/isLogin.middleware.js"
 const router = Router()
 
 
-router.use("/products", isLogin, productsRouters)
+router.use("/products", productsRouters)
 router.use("/carts", cartsRouters)
 router.use("/session", sessionRouters)
 

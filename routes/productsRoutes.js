@@ -1,5 +1,7 @@
 import { Router } from "express";
 import productDao from "../dao/mongoDao/product.dao.js";
+import { authorization, passportCall } from "../middlewares/passport.middleware.js";
+import { productDataValidator } from "../validator/productData.validator.js";
 
 
 const router = Router()
@@ -55,7 +57,7 @@ router.get("/:pid", async (req, res) => {
 })
 
 
-router.post ("/", async (req, res) => {
+router.post ("/", passportCall("jwt"), authorization("admin"), productDataValidator, async (req, res) => {
 
     try{
 
@@ -71,7 +73,7 @@ router.post ("/", async (req, res) => {
     }
 })
 
-router.put ("/:pid", async (req, res) => {
+router.put ("/:pid", passportCall("jwt"), authorization("admin"), async (req, res) => {
 
     try{
         const {pid} = req.params
@@ -88,7 +90,7 @@ router.put ("/:pid", async (req, res) => {
     }
 })
 
-router.delete ("/:pid", async (req, res) => {
+router.delete ("/:pid", passportCall("jwt"), authorization("admin"), async (req, res) => {
 
     try{
         const {pid} = req.params

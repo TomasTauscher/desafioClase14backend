@@ -1,10 +1,12 @@
 import { Router } from "express";
 import cartDao from "../dao/mongoDao/cart.dao.js";
+import { authorization, passportCall } from "../middlewares/passport.middleware.js";
+import passport from "passport";
 
 const router = Router()
 
 
-router.post("/", async (req, res) => {
+router.post("/", authorization("user"), async (req, res) => {
 
     try{
 
@@ -18,7 +20,7 @@ router.post("/", async (req, res) => {
     }
 })
 
-router.post("/:cid/product/:pid", async (req, res) => {
+router.post("/:cid/product/:pid", passportCall("jwt"), authorization("user"),  async (req, res) => {
 
     try{
         const {cid, pid} = req.params
@@ -34,7 +36,7 @@ router.post("/:cid/product/:pid", async (req, res) => {
     }
 })
 
-router.put("/:cid/product/:pid", async (req, res) => {
+router.put("/:cid/product/:pid", passportCall("jwt"), authorization("user"), async (req, res) => {
 
     try{
         const {cid, pid} = req.params
@@ -51,7 +53,7 @@ router.put("/:cid/product/:pid", async (req, res) => {
     }
 })
 
-router.delete("/:cid/product/:pid", async (req, res) => {
+router.delete("/:cid/product/:pid", passportCall("jwt"), authorization("user"), async (req, res) => {
 
     try{
         const {cid, pid} = req.params
@@ -66,7 +68,7 @@ router.delete("/:cid/product/:pid", async (req, res) => {
     }
 })
 
-router.get("/:cid", async (req, res) => {
+router.get("/:cid", passportCall("jwt"), authorization("user"), async (req, res) => {
 
     try{
         const {cid} = req.params
@@ -82,7 +84,7 @@ router.get("/:cid", async (req, res) => {
 })
 
 
-router.put("/:cid", async(req, res) => {
+router.put("/:cid", passportCall("jwt"), authorization("user"), async(req, res) => {
     try{
         const { cid } = req.params;
         const body = req.body;
@@ -97,7 +99,7 @@ router.put("/:cid", async(req, res) => {
         res.status(500).json({ status: "Error", msg: "Error interno del servidor"})
     }
 })
-router.delete("/:cid", async(req, res) => {
+router.delete("/:cid", passportCall("jwt"), authorization("user"), async(req, res) => {
     try{
         const { cid } = req.params;
         const cart = await cartDao.deleteAllProductsInCart(cid)

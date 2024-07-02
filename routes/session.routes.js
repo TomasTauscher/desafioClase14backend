@@ -3,12 +3,14 @@ import userDao from "../dao/mongoDao/user.dao.js";
 import passport from "passport";
 import { createToken, verifyToken } from "../utils/jwt.js";
 import { isValidPassword } from "../utils/hashPassword.js";
+import { authorization, passportCall } from "../middlewares/passport.middleware.js";
+import { userLoginValidator } from "../validator/userLogin.validator.js";
 
 const router = Router();
 
 
 
-router.post("/register", passport.authenticate("register") , async (req, res) => {
+router.post("/register", passportCall("register") , async (req, res) => {
     try {
         
         res.status(201).json({status: "success", payload: "Usuario creado"})
@@ -30,7 +32,7 @@ router.post("/login", passport.authenticate("login"), async (req, res) => {
     }
 })
 
-router.post("/jwt", passport.authenticate("login"), async (req, res) => {
+router.post("/jwt", userLoginValidator, passport.authenticate("login"), async (req, res) => {
     try {
         const { email, password} = req.body
         const user = await userDao.getByEmail(email)
@@ -46,14 +48,12 @@ router.post("/jwt", passport.authenticate("login"), async (req, res) => {
     }
 })
 
-router.get("/current", (req, res) => {
+router.get("/current", passportCall("jwt"), authorization("user"), (req, res) => {
     try{
 
-        const token = req.cookies.token
-        const checkToken = verifyToken(token)
-        if(!checkToken) return res.status(403).json({status: "error", msg:"Invalid token"})
 
-        return res.status(200).json({ status: "success", payload: checkToken })
+
+        return res.status(200).json({ status: "success", payload: req.user })
 
     } catch (error){
         console.log(error)

@@ -1,11 +1,24 @@
 import passport from "passport";
 import local from "passport-local"
 import { createHash, isValidPassword } from "../utils/hashPassword.js";
+import jwt from "passport-jwt"
 import userDao from "../dao/mongoDao/user.dao.js";
 import google from "passport-google-oauth20"
 
 const localStrategy = local.Strategy
 const GoogleStrategy = google.Strategy
+const JWTStrategy = jwt.Strategy
+const ExtractJWT = jwt.ExtractJwt
+
+const cookieExtracto = (req) => {
+    let token = null
+
+    if(req && req.cookies) {
+        token = req.cookies.token
+    }
+
+    return token
+}
 
 const initializePassport = () => {
     passport.use( 
@@ -14,15 +27,17 @@ const initializePassport = () => {
         async (req, username, password, done) => {
             try{
 
-                const {first_name, last_name, email, age} = req.body
+                const {first_name, last_name, email, age, role} = req.body
                 const user = await userDao.getByEmail(username)
                 if(user) return done(null, false, {message: "El usuario ya existe"})
+
                 const newUser = {
                     first_name,
                     last_name,
                     email,
                     password: createHash(password),
                     age,
+                    role
                 }
 
 
@@ -56,9 +71,9 @@ const initializePassport = () => {
             "google",
             new GoogleStrategy(
                 {
-                    clientID: "",
-                    clientSecret: "",
-                    callbackURL: "",
+                    clientID: "104713265567-dadetr8p939mc48mjjdnpujvuns1dinr.apps.googleusercontent.com",
+                    clientSecret: "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",
+                    callbackURL: "http://localhost:8082/api/session/google",
                 },
                 async (accessToken, refreshToken, profile, cb) => {
                     try{
@@ -82,6 +97,20 @@ const initializePassport = () => {
             )
         )
 
+        passport.use( 'jwt' , new JWTStrategy(
+            {
+            jwtFromRequest: ExtractJWT.fromExtractors([cookieExtracto]),
+            secretOrKey: "codigoSecreto"
+            },
+            async (jwt_payload, done) => {
+                try{
+                    return done(null, jwt_payload)
+                } catch (error) {
+                    return done(error)
+                }
+            }
+        ))
+
         passport.serializeUser( (user, done) => {
             done(null, user._id)
         } )
@@ -93,3 +122,4 @@ const initializePassport = () => {
 }
 
 export default initializePassport
+
