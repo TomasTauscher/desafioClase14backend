@@ -4,7 +4,11 @@ git commit -m "lo que quieras"
 git branch -M main
 git push
 
+<<<<<<< HEAD
 a
+=======
+
+>>>>>>> 7d0c390b05f1d3be5c357818f3ddbaeef6c9cae9
 git remote remove origin
 
 
