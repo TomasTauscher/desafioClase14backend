@@ -4,7 +4,7 @@ git commit -m "lo que quieras"
 git branch -M main
 git push
 
-
+a
 git remote remove origin
 
 
