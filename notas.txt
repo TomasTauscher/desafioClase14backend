@@ -4,11 +4,7 @@ git commit -m "lo que quieras"
 git branch -M main
 git push
 
-<<<<<<< HEAD
 a
-=======
-
->>>>>>> 7d0c390b05f1d3be5c357818f3ddbaeef6c9cae9
 git remote remove origin
 
 
@@ -28,3 +24,7 @@ git push -u origin main
 git remote add origin https://github.com/TomasTauscher/desafioClase11backend.git
 git branch -M main
 git push -u origin main
+
+clientID: "104713265567-dadetr8p939mc48mjjdnpujvuns1dinr.apps.googleusercontent.com",
+clientSecret: "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",
+callbackURL: "http://localhost:8082/api/session/google",
